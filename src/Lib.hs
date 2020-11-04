@@ -4,7 +4,7 @@ module Lib
   )
 where
 
-import Data.Map as Map
+import qualified Data.Map as Map
 
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
@@ -74,10 +74,34 @@ lockerLookup number map =
         else Left $ "Locker " ++ show number ++ " is already taken"
 
 hasError :: Either String Code -> Bool
-hasError v =
-  case v of
-    Left _ -> True
-    Right _ -> False
+hasError (Left _) = True
+hasError (Right _) = False
+
+infixr 5 :-:
 
 -- deriving Show is necessary for displaying in ghci
-data List a = Empty | Cons a (List a) deriving (Show)
+data List a = Empty | a :-: (List a) deriving (Show)
+
+infixr 5 .++
+
+(.++) :: List a -> List a -> List a
+Empty .++ l = l
+(x :-: l1) .++ l2 = x :-: (l1 .++ l2)
+
+data Tree a = EmptyTree | Node a (Tree a) (Tree a) deriving (Show)
+
+singleton :: Ord a => a -> Tree a
+singleton x = Node x EmptyTree EmptyTree
+
+treeInsert :: Ord a => a -> Tree a -> Tree a
+treeInsert x EmptyTree = singleton x
+treeInsert x (Node root lt rt)
+  | x < root = Node root (treeInsert x lt) rt
+  | otherwise = Node root lt $ treeInsert x rt
+
+treeElem :: (Ord a) => a -> Tree a -> Bool
+treeElem _ EmptyTree = False
+treeElem x (Node root lt rt)
+  | x == root = True
+  | x < root = treeElem x lt
+  | otherwise = treeElem x rt
