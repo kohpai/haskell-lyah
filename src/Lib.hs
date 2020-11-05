@@ -1,13 +1,9 @@
 module Lib
-  ( someFunc,
-    surface,
+  ( surface,
   )
 where
 
 import qualified Data.Map as Map
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
 
 -- concrete types defined with data keyword
 data Point = Point Float Float deriving (Show)
@@ -105,3 +101,78 @@ treeElem x (Node root lt rt)
   | x == root = True
   | x < root = treeElem x lt
   | otherwise = treeElem x rt
+
+data TrafficLight = Red | Yellow | Green
+
+-- minimal complete definition for the typeclass, we don't define /= (it already has default implementation)
+instance Eq TrafficLight where
+  Red == Red = True
+  Green == Green = True
+  Yellow == Yellow = True
+  _ == _ = False
+
+instance Show TrafficLight where
+  show Red = "Red Light"
+  show Yellow = "Yellow Light"
+  show Green = "Green Light"
+
+class YesNo a where
+  yesno :: a -> Bool
+
+instance YesNo Int where
+  yesno 0 = False
+  yesno _ = True
+
+instance YesNo [a] where
+  yesno [] = False
+  yesno _ = True
+
+instance YesNo Bool where
+  yesno = id -- takes parameter and return same thing
+
+instance YesNo (Maybe a) where
+  yesno Nothing = False
+  yesno (Just _) = True
+
+instance YesNo (Tree a) where
+  yesno EmptyTree = False
+  yesno _ = True
+
+instance YesNo TrafficLight where
+  yesno Red = False
+  yesno _ = True
+
+instance YesNo (List a) where
+  yesno Empty = False
+  yesno _ = True
+
+yesnoIf :: (YesNo y) => y -> a -> a -> a
+yesnoIf yesnoExpr yesVal noVal = if yesno yesnoExpr then yesVal else noVal
+
+level :: Tree a -> Integer
+level EmptyTree = 0
+level (Node x l r) = max (1 + level l) (1 + level r)
+
+depth :: Tree a -> Integer
+depth EmptyTree = 0
+depth t = level t - 1
+
+instance Functor Tree where
+  fmap _ EmptyTree = EmptyTree
+  fmap f (Node root left right) = Node (f root) (fmap f left) (fmap f right)
+
+-- kind of t :: * -> (* -> *) -> *
+class Tofu t where
+  tofu :: j a -> t a j
+
+-- kind of Frank :: * -> (* -> *) -> *
+data Frank a b = Frank {frankField :: b a} deriving (Show)
+
+instance Tofu Frank where
+  tofu x = Frank x
+
+-- kind of Barry :: (* -> *) -> * -> * -> *
+data Barry t k p = Barry {yabba :: p, dabba :: t k}
+
+instance Functor (Barry a b) where
+  fmap f (Barry {yabba = x, dabba = y}) = Barry {yabba = f x, dabba = y}
