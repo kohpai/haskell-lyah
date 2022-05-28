@@ -1,6 +1,7 @@
 module Main where
 
 --import Lib
+import qualified Data.Char as Char
 
 main :: IO ()
 main = simpleMain
@@ -15,3 +16,13 @@ simpleMain = do
   -- <- can be used only in a function with IO action (f :: IO something)
   name <- getLine
   putStrLn $ "Hey " ++ name ++ ", you rock!"
+
+ioBinding :: IO ()
+ioBinding = do
+  putStrLn "What's your first name?"
+  firstName <- getLine
+  putStrLn "What's your last name?"
+  lastName <- getLine
+  let bigFirstName = map Char.toUpper firstName
+      bigLastName = map Char.toUpper lastName
+  putStrLn $ "hey " ++ bigFirstName ++ " " ++ bigLastName ++ ", how are you?"
