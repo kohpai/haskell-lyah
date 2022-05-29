@@ -1,6 +1,8 @@
 module Main where
 
 --import Lib
+
+import qualified Control.Monad as Monad
 import qualified Data.Char as Char
 
 main :: IO ()
@@ -40,3 +42,20 @@ chainIoAction = do
 
 reverseWords :: String -> String
 reverseWords = unwords . map reverse . words
+
+sampleReturn :: IO Int
+sampleReturn = do
+  -- returns encapsulate value into an IO action
+  -- it doesn't terminate the program
+  return ()
+  return "HAHAHA"
+  line <- getLine
+  return "BLAH BLAH BLAH"
+  return 4
+
+sampleWhen :: IO ()
+sampleWhen = do
+  c <- getChar
+  Monad.when (c /= ' ') $ do
+    putChar c
+    sampleWhen
