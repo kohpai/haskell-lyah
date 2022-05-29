@@ -26,3 +26,17 @@ ioBinding = do
   let bigFirstName = map Char.toUpper firstName
       bigLastName = map Char.toUpper lastName
   putStrLn $ "hey " ++ bigFirstName ++ " " ++ bigLastName ++ ", how are you?"
+
+-- do chains together IO actions in to one IO action
+-- Hence it can be put after else
+chainIoAction :: IO ()
+chainIoAction = do
+  line <- getLine
+  if null line
+    then return ()
+    else do
+      putStrLn $ reverseWords line
+      chainIoAction
+
+reverseWords :: String -> String
+reverseWords = unwords . map reverse . words
