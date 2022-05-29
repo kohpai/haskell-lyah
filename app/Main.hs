@@ -27,7 +27,7 @@ ioBinding = do
       bigLastName = map Char.toUpper lastName
   putStrLn $ "hey " ++ bigFirstName ++ " " ++ bigLastName ++ ", how are you?"
 
--- do chains together IO actions in to one IO action
+-- do chains together IO actions into one IO action
 -- Hence it can be put after else
 chainIoAction :: IO ()
 chainIoAction = do
