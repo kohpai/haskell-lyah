@@ -59,3 +59,26 @@ sampleWhen = do
   Monad.when (c /= ' ') $ do
     putChar c
     sampleWhen
+
+solveRPN :: (Read a) => String -> a
+solveRPN = read . head . trinaryOperation . words
+
+trinaryOperation :: [String] -> [String]
+trinaryOperation [x, y, "*"] = [show $ read x * read y]
+trinaryOperation [x, y, "+"] = [show $ read x + read y]
+trinaryOperation [x, y, "-"] = [show $ read x - read y]
+trinaryOperation (x:y:z:xs) = trinaryOperation $ trinaryOperation [x,y,z] ++ xs
+trinaryOperation (_:_) = error "Nah"
+trinaryOperation [] = error "Nah man"
+
+solveRPN' :: (Num a, Read a) => String -> a
+solveRPN' = head . foldl constructStack [] . words
+
+-- create a list of Num using read
+-- for every two number, read in operator
+-- evaluate and push the result back to the list
+constructStack :: (Num a, Read a) => [a] -> String -> [a]
+constructStack (x:y:ys) "*" = (x*y):ys
+constructStack (x:y:ys) "+" = (x+y):ys
+constructStack (x:y:ys) "-" = (x-y):ys
+constructStack xs num = read num:xs
